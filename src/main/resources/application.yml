@@ -1,1 +1,3 @@
-spring.application.name=Batting-Stock
+spring:
+  profiles:
+    active: local
