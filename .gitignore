@@ -43,3 +43,5 @@ application-local.yml
 application-db.yml
 application-test.yml
 .env
+/src/main/resources/*.csv
+*.csv

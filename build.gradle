@@ -52,6 +52,8 @@ dependencies {
     implementation 'org.glassfish.web:jakarta.servlet.jsp.jstl'
 
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    implementation 'com.opencsv:opencsv:5.7.1'
 }
 
 tasks.named('test') {
