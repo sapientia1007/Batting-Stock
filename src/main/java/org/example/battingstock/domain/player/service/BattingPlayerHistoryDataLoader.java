@@ -102,7 +102,6 @@ public class BattingPlayerHistoryDataLoader {
                         .hr(acc.getAverageHr())
                         .ops(acc.getAverageOps())
                         .basePrice(calculateInitialPrice(acc.getAverageWar()))
-
                         .build();
                 battingPlayers.add(battingPlayer);
             }
