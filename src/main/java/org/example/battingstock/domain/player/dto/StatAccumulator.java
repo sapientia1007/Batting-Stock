@@ -6,6 +6,7 @@ import lombok.Getter;
 public class StatAccumulator {
     private String name;
     private String team;
+    private String birthday;
     private String position;
     private int lastYear = 0;
 
@@ -16,9 +17,10 @@ public class StatAccumulator {
     private int totalHr = 0;
     private int count = 0;
 
-    public StatAccumulator(String name, String team, String position, int year) {
+    public StatAccumulator(String name, String team, String birthday, String position, int year) {
         this.name = name;
         this.team = team;
+        this.birthday = birthday;
         this.position = position;
         this.lastYear = year;
     }

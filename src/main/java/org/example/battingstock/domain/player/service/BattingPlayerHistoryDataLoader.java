@@ -80,7 +80,7 @@ public class BattingPlayerHistoryDataLoader {
                     StatAccumulator acc = accumulatorMap.get(playerKey);
 
                     if (acc == null) {
-                        acc = new StatAccumulator(line[1], line[7], line[9], year);
+                        acc = new StatAccumulator(line[1], line[7], birthday, line[9], year);
                         accumulatorMap.put(playerKey, acc);
                     }
 
@@ -94,6 +94,7 @@ public class BattingPlayerHistoryDataLoader {
             for (StatAccumulator acc : accumulatorMap.values()) {
                 BattingPlayer battingPlayer = BattingPlayer.builder()
                         .name(acc.getName())
+                        .birthday(acc.getBirthday())
                         .team(acc.getTeam())
                         .position(acc.getPosition())
                         .war(acc.getAverageWar())
@@ -101,6 +102,7 @@ public class BattingPlayerHistoryDataLoader {
                         .hr(acc.getAverageHr())
                         .ops(acc.getAverageOps())
                         .basePrice(calculateInitialPrice(acc.getAverageWar()))
+
                         .build();
                 battingPlayers.add(battingPlayer);
             }

@@ -17,6 +17,7 @@ public class BattingPlayer {
     private Long id;
 
     private String name;
+    private String birthday;
     private String team;
     private String position;
 
@@ -30,9 +31,10 @@ public class BattingPlayer {
     private Long basePrice;    // 시초가
 
     @Builder
-    public BattingPlayer(String name, String team, String position,
+    public BattingPlayer(String name, String birthday, String team, String position,
                          Double war, Double avg, Integer hr, Double ops, Long basePrice) {
         this.name = name;
+        this.birthday = birthday;
         this.team = team;
         this.position = position;
         this.war = war;
@@ -42,4 +44,10 @@ public class BattingPlayer {
         this.basePrice = basePrice;
         this.currentPrice = basePrice;
     }
+
+    public Long updateCurrentPrice(Long updatedPrice) {
+        this.currentPrice = updatedPrice;
+        return updatedPrice;
+    }
+
 }
