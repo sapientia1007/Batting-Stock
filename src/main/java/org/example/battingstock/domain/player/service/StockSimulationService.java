@@ -3,7 +3,6 @@ package org.example.battingstock.domain.player.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.battingstock.domain.player.entity.BattingPlayer;
-import org.example.battingstock.domain.player.entity.BattingPlayerHistory;
 import org.example.battingstock.domain.player.entity.PriceChangeLog;
 import org.example.battingstock.domain.player.entity.dto.PlayerStatDto;
 import org.example.battingstock.domain.player.repository.BattingPlayerHistoryRepository;

@@ -3,10 +3,8 @@ package org.example.battingstock.scheduler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.battingstock.domain.player.service.StockSimulationService;
-import org.example.battingstock.global.config.SchedulerConfig;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
