@@ -21,7 +21,7 @@ public class DailyPriceLogCleaner {
 
     // 매일 새벽 2시에 실행 : 어제자 라인업 및 시뮬 로그 삭제
 //    @Scheduled(cron = "0 0 2 * * *")
-    @Scheduled(cron = "0 27 20 * * *") // 테스트용
+    @Scheduled(cron = "0 07 21 * * *") // 테스트용
     @Transactional
     public void clearDailyLogs() {
         logRepository.deleteAllInBatch();
@@ -31,7 +31,7 @@ public class DailyPriceLogCleaner {
 
     // 매일 새벽 3시에 실행 : 오늘의 라인업 (각 팀별, 포지션별)
 //    @Scheduled(cron = "0 0 3 * * *")
-    @Scheduled(cron = "0 38 20 * * *") // 테스트용
+    @Scheduled(cron = "0 08 21 * * *") // 테스트용
     @Transactional
     public void makeDailyLineUp() {
         log.info("******** [오늘자 시뮬레이션 라인업 생성] ********");
