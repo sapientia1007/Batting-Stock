@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.battingstock.domain.player.entity.BattingPlayer;
 import org.example.battingstock.domain.player.entity.BattingPlayerHistory;
 import org.example.battingstock.domain.player.entity.PriceChangeLog;
+import org.example.battingstock.domain.player.entity.dto.PlayerStatDto;
 import org.example.battingstock.domain.player.repository.BattingPlayerHistoryRepository;
 import org.example.battingstock.domain.player.repository.BattingPlayerRepository;
 import org.example.battingstock.domain.player.repository.PriceChangeLogRepository;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Slf4j
 @Service
@@ -26,26 +26,26 @@ public class StockSimulationService {
     @Transactional
     public void simulateBatting() {
         log.info("========= 실시간 주가 시뮬레이션 시작 =========");
-        List<BattingPlayer> battingPlayers = battingPlayerRepository.findRandomBattingPlayers();
+        // 오늘의 각 팀 주전
+        List<BattingPlayer> starters = battingPlayerRepository.findBattingPlayerByIsTodayStarterTrue();
 
-        for (BattingPlayer player : battingPlayers) {
-            List<BattingPlayerHistory> histories = playerHistoryRepository.findBattingPlayerHistoryByPlayerKey(player.getName()+"_"+player.getBirthday()).orElseThrow(() -> new NoSuchElementException("해당 선수가 존재하지 않습니다."));
+        // 주전의 키 리스트 추출
+        List<String> starterKeys = starters.stream().map(p->p.getName()+"_"+p.getBirthday()).toList();
 
-            long totalPa = histories.stream().mapToLong(BattingPlayerHistory::getPa).sum();
-            long totalH = histories.stream().mapToLong(BattingPlayerHistory::getH).sum();
-            long totalHr = histories.stream().mapToLong(BattingPlayerHistory::getHr).sum();
-            long totalBb = histories.stream().mapToLong(h -> h.getBb() + h.getHp()).sum();
-            long totalSo = histories.stream().mapToLong(BattingPlayerHistory::getSo).sum();
+        // 통계 조회
+        List<PlayerStatDto> starterStat = battingPlayerRepository.findAllStatsByPlayerKeys(starterKeys);
 
-            // 주가 변동 (변동폭은 1%~3% 사이 랜덤)
-            applyPriceChange(player, totalPa, totalH, totalHr, totalBb, totalSo);
+        for (PlayerStatDto player : starterStat) {
+            // player 정보 가져오기
+            BattingPlayer savedPlayer = battingPlayerRepository.findBattingPlayerByPlayerKey(player.getPlayerKey()).orElseThrow(() -> new NullPointerException("선수 데이터가 존재하지 않습니다."));
+
+            applyPriceChange(savedPlayer, player.getTotalPa(), player.getTotalH(), player.getTotalHr(), player.getTotalBb(), player.getTotalSo());
         }
 
-        battingPlayerRepository.saveAll(battingPlayers);
         log.info("========= 주가 시뮬레이션 완료 (현재가 반영됨) =========");
     }
 
-    private void applyPriceChange(BattingPlayer player, long pa, long h, long hr, long bb, long so) {
+    private void applyPriceChange(BattingPlayer player, Long pa, long h, long hr, long bb, long so) {
         double random = Math.random();
         long oldPrice = player.getCurrentPrice();
         double volatility = 0.01 + (Math.random() * 0.02);

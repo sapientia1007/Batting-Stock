@@ -30,6 +30,11 @@ public class BattingPlayer {
     private Long currentPrice; // 현재가
     private Long basePrice;    // 시초가
 
+    // 오늘 라인업 대상
+    private boolean isTodayStarter;
+
+    private String playerKey;
+
     @Builder
     public BattingPlayer(String name, String birthday, String team, String position,
                          Double war, Double avg, Integer hr, Double ops, Long basePrice) {
@@ -43,11 +48,17 @@ public class BattingPlayer {
         this.ops = ops;
         this.basePrice = basePrice;
         this.currentPrice = basePrice;
+        this.isTodayStarter = false;
+        this.playerKey = name+"_"+birthday;
     }
 
     public Long updateCurrentPrice(Long updatedPrice) {
         this.currentPrice = updatedPrice;
         return updatedPrice;
+    }
+
+    public void updateStarter() {
+        this.isTodayStarter = true;
     }
 
 }
