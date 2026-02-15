@@ -52,9 +52,8 @@ public class BattingPlayer {
         this.playerKey = name+"_"+birthday;
     }
 
-    public Long updateCurrentPrice(Long updatedPrice) {
+    public void updateCurrentPrice(Long updatedPrice) {
         this.currentPrice = updatedPrice;
-        return updatedPrice;
     }
 
     public void updateStarter() {
