@@ -26,30 +26,45 @@
 </div>
 
 <script>
-    function fetchLatestLogs() {
-        $.get("/api/v1/stock/latest", function(data) {
-            if(data && data.length > 0) {
-                const top = data[0];
-                const color = top.outcome === 'HOMERUN' ? 'text-danger' : 'text-warning';
-                $('#ticker-content').html(`<span class="\${color}">[\${top.outcome}]</span> \${top.playerName} 선수 시세 변동! 현재가: \${top.changedPrice}원`);
+    // SSE 연결 시작
+    const eventSource = new EventSource('/api/v1/stock/stream');
 
-                let html = "";
-                data.forEach(log => {
-                    const fluctuation = log.fluctuation || 0;
-                    const badgeClass = fluctuation > 0 ? 'bg-danger' : 'bg-primary';
-                    const sign = fluctuation > 0 ? '↑' : '↓';
+    eventSource.addEventListener('connect', (e) => {
+        console.log("===== SSE 연결 성공:", e.data);
+    });
 
-                    html += `<li class="list-group-item d-flex justify-content-between align-items-center">
-                            \${log.playerName} (\${log.outcome})
-                            <span class="badge \${badgeClass} rounded-pill">\${sign} \${Math.abs(fluctuation)}원</span>
-                         </li>`;
-                });
-                $('#realtime-logs').html(html);
-            }
-        });
-    }
+    eventSource.addEventListener('playerRecordUpdate', (e) => {
+        const data = JSON.parse(e.data); // 파싱
 
-    setInterval(fetchLatestLogs, 3000);
+        if(data && data.length > 0) {
+            const top = data[0];
+            const color = top.outcome === 'HOMERUN' ? 'text-danger' : 'text-warning';
+            $('#ticker-content').html(`<span class="\${color}">[\${top.outcome}]</span> \${top.playerName} 선수 시세 변동! 현재가: \${top.changedPrice}원`);
+
+            // 업데이트 (최신 5건)
+            let html = "";
+            data.forEach(log => {
+                const fluctuation = log.fluctuation || 0;
+                const badgeClass = fluctuation > 0 ? 'bg-danger' : 'bg-primary';
+                const sign = fluctuation > 0 ? '↑' : '↓';
+
+                html += `<li class="list-group-item d-flex justify-content-between align-items-center">
+                        \${log.playerName} (\${log.outcome})
+                        <span class="badge \${badgeClass} rounded-pill">\${sign} \${Math.abs(fluctuation)}원</span>
+                     </li>`;
+            });
+            $('#realtime-logs').html(html);
+        }
+    });
+
+    // 에러 발생 시 처리
+    eventSource.onerror = (error) => {
+        console.error("===== SSE 연결 오류 : ", error);
+    };
+
+    // 페이지를 닫거나 벗어날 때 연결 종료
+    window.addEventListener('beforeunload', () => {
+        eventSource.close();
+    });
 </script>
-
 <%@ include file="common/footer.jsp" %>

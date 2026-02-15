@@ -5,9 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.battingstock.domain.player.entity.BattingPlayer;
 import org.example.battingstock.domain.player.entity.PriceChangeLog;
 import org.example.battingstock.domain.player.entity.dto.PlayerStatDto;
+import org.example.battingstock.domain.player.event.StockPriceUpdateEvent;
 import org.example.battingstock.domain.player.repository.BattingPlayerHistoryRepository;
 import org.example.battingstock.domain.player.repository.BattingPlayerRepository;
 import org.example.battingstock.domain.player.repository.PriceChangeLogRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,8 +21,8 @@ import java.util.List;
 public class StockSimulationService {
 
     private final BattingPlayerRepository battingPlayerRepository;
-    private final BattingPlayerHistoryRepository playerHistoryRepository;
     private final PriceChangeLogRepository priceChangeLogRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Transactional
     public void simulateBatting() {
@@ -41,6 +43,11 @@ public class StockSimulationService {
             applyPriceChange(savedPlayer, player.getTotalPa(), player.getTotalH(), player.getTotalHr(), player.getTotalBb(), player.getTotalSo());
         }
 
+        List<PriceChangeLog> latestLogs = priceChangeLogRepository.findTop5UniqueHotEvents();
+        if (!latestLogs.isEmpty()) {
+            applicationEventPublisher.publishEvent(new StockPriceUpdateEvent(latestLogs));
+            log.info("실시간 주가 변동 이벤트 발행!");
+        }
         log.info("========= 주가 시뮬레이션 완료 (현재가 반영됨) =========");
     }
 
